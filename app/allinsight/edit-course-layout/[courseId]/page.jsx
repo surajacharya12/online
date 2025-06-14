@@ -8,9 +8,9 @@ import { CourseInfo } from "../../_components/courseinfo";
 import { ChapterTopicList } from "../../_components/chapterTopicList";
 import { Skeleton } from "../../../../components/ui/skeleton";
 
-export default function EditCourse({ courseId: propCourseId, viewcourse = false }) {
-  const params = useParams();
-  const courseId = propCourseId || params.courseId;
+export default function EditCourse({ params, searchParams }) {
+  const courseId = params.courseId;
+  const viewcourse = searchParams?.viewcourse === 'true';
 
   const [loading, setLoading] = useState(false);
   const [course, setCourse] = useState({});
