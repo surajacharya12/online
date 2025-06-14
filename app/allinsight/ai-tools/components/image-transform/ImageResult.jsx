@@ -9,11 +9,40 @@ export default function ImageResult({ imageUrl, isLoading, error }) {
         <ImageIcon size={48} className="text-blue-600" />
 
         {!isLoading && !error && imageUrl && (
-          <img
-            src={imageUrl}
-            alt="Generated visual"
-            className="max-w-full max-h-[350px] rounded-2xl shadow-lg object-contain"
-          />
+          <div className="flex flex-col items-center space-y-2 w-full">
+            <img
+              src={imageUrl}
+              alt="Generated visual"
+              className="max-w-full max-h-[350px] rounded-2xl shadow-lg object-contain mb-2"
+            />
+            <button
+              onClick={() => {
+                const a = document.createElement("a");
+                a.href = imageUrl;
+                a.download = "AIInsights-image.png";
+                a.click();
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow transition mt-2"
+              title="Download image"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 5v14m0 0l-5-5m5 5l5-5M5 19h14"
+                />
+              </svg>
+              Download
+            </button>
+          </div>
         )}
 
         {isLoading && (

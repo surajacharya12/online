@@ -1,9 +1,8 @@
 import { db } from "../../../config/db";
 import { coursesTable } from "../../../config/schema";
 import { currentUser } from "@clerk/nextjs/server";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Modality } from "@google/genai";
 import { NextResponse } from "next/server";
-import axios from "axios";
 
 const PROMPT = `Generate Learning Course depends on following details. In which Make sure to add Course Name, Description, Course Banner Image Prompt (Create a modern, flat-style 2D digital illustration representing user Topic. Include UI/UX elements such as mockup screens, text blocks, icons, buttons, and creative workspace tools. Add symbolic elements related to user Course, like sticky notes, design components, and visual aids. Use a vibrant color palette (blues, purples, oranges) with a clean, professional look. The illustration should feel creative, tech-savvy, and educational, ideal for visualizing concepts in user Course) for Course Banner in 3d format Chapter Name, Topic under each chapters, Duration for each chapters etc, in JSON format only
 
@@ -44,6 +43,7 @@ export async function POST(request) {
 
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+    // 1. Generate course structure using text generation
     const response = await ai.models.generateContent({
       model: "gemini-1.5-flash",
       contents: [
@@ -63,7 +63,7 @@ export async function POST(request) {
       throw new Error("Failed to generate course layout");
     }
 
-    // ✅ Extract clean JSON from Gemini output
+    // 2. Extract JSON from Gemini response
     const extractJSON = (text) => {
       const first = text.indexOf("{");
       const last = text.lastIndexOf("}");
@@ -77,9 +77,10 @@ export async function POST(request) {
     const noOfChapters = parsedCourse.course.noOfChapters;
     const imagePrompt = parsedCourse.course.bannerImagePrompt;
 
-    const bannerImageURL = await GenerateImage(imagePrompt);
+    // 3. Generate image using Gemini's multimodal capability
+    const bannerImageBase64 = await GenerateImageWithGemini(imagePrompt);
 
-    // ✅ Save clean JSON string to database
+    // 4. Save course to DB
     await db.insert(coursesTable).values({
       cid: courseId,
       userEmail: email,
@@ -90,7 +91,7 @@ export async function POST(request) {
       includeVideo: formData.includeVideo,
       noOfChapters,
       courseJson: jsonString,
-      bannerImageURL,
+      bannerImageURL: `data:image/png;base64,${bannerImageBase64}`, // inline base64 image
     });
 
     return NextResponse.json({ courseId });
@@ -100,27 +101,29 @@ export async function POST(request) {
   }
 }
 
-// ✅ Helper function to generate image
-async function GenerateImage(prompt) {
-  const BASE_URL = "https://aigurulab.tech";
+// ✅ Gemini-powered image generator using prompt
+async function GenerateImageWithGemini(prompt) {
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-  const result = await axios.post(
-    `${BASE_URL}/api/generate-image`,
-    {
-      width: 1024,
-      height: 1024,
-      input: prompt,
-      model: "sdxl",
-      aspectRatio: "16:9",
-    },
-    {
-      headers: {
-        "x-api-key": process.env.AI_GURU_LAB_API,
-        "Content-Type": "application/json",
+  const response = await ai.models.generateContent({
+    model: "gemini-2.0-flash-preview-image-generation",
+    contents: prompt,
+    config: {
+      responseModalities: [Modality.IMAGE, Modality.TEXT],
+      image: {
+        width: 1024,
+        height: 1024,
       },
-    }
+    },
+  });
+
+  const imagePart = response.candidates?.[0]?.content?.parts.find(
+    (part) => part.inlineData?.data
   );
 
-  console.log("Generated banner image URL:", result.data.image);
-  return result.data.image;
+  if (!imagePart) {
+    throw new Error("No image data received from Gemini");
+  }
+
+  return imagePart.inlineData.data; // base64
 }

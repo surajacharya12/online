@@ -21,8 +21,11 @@ export default function ImageGeneratorPage() {
       });
 
       const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Unknown error");
+      // Debug log Gemini API error details
+      if (!res.ok) {
+        console.error("Image generation error (API):", data);
+        throw new Error(data.error || "Unknown error");
+      }
 
       setImageUrl(data.image);
     } catch (err) {

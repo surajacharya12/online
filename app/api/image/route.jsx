@@ -1,77 +1,74 @@
+import { GoogleGenAI, Modality } from "@google/genai";
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+function parseAspectRatio(ratioStr) {
+  const [w, h] = ratioStr.split(":").map(Number);
+  if (!w || !h) return [1, 1]; // default fallback
+  return [w, h];
+}
+
 export async function POST(req) {
   try {
-    // Parse JSON from request body
     const { prompt, aspectRatio = "1:1" } = await req.json();
-    const apiKey=process.env.NEXT_PUBLIC_AI_GURU_LAB_API
-    // Your API key (make sure to store this securely in env vars for production)
-    //const apiKey = "82b2cd49-183b-4928-82a1-8b91f3a91205";
 
-    if (!apiKey) {
-      console.error("❌ Missing API key");
+    if (!prompt || typeof prompt !== "string") {
       return new Response(
-        JSON.stringify({ error: "API key is missing" }),
+        JSON.stringify({ error: "Prompt must be a non-empty string" }),
+        { status: 400 }
+      );
+    }
+
+    // Parse aspect ratio and calculate image dimensions
+    const [ratioW, ratioH] = parseAspectRatio(aspectRatio);
+
+    // Clamp the max dimension to 1024 while preserving aspect ratio
+    const maxDim = 1024;
+    let width = Math.round((maxDim * ratioW) / Math.max(ratioW, ratioH));
+    let height = Math.round((maxDim * ratioH) / Math.max(ratioW, ratioH));
+
+    // Final clamping between 64 and 1024 (Gemini limits)
+    const clamp = (val) => Math.min(Math.max(val, 64), 1024);
+    width = clamp(width);
+    height = clamp(height);
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash-preview-image-generation",
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      config: {
+        responseModalities: [Modality.IMAGE, Modality.TEXT],
+        image: {
+          width,
+          height,
+        },
+      },
+    });
+
+    const imagePart = response?.candidates?.[0]?.content?.parts?.find(
+      (part) => part.inlineData?.data
+    );
+
+    if (!imagePart) {
+      return new Response(
+        JSON.stringify({ error: "No image data received from Gemini" }),
         { status: 500 }
       );
     }
 
-    // Build request payload for external API
-    const payload = {
-      width: 1024,
-      height: 1024,
-      input: prompt,
-      model: "sdxl",
-      aspectRatio,
-    };
+    const base64Image = imagePart.inlineData.data;
+    const dataUrl = `data:image/png;base64,${base64Image}`;
 
-    console.log("➡️ Sending request to external API with payload:", payload);
-
-    // Call external image generation API
-    const response = await fetch("https://aigurulab.tech/api/generate-image", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    // Log status and headers for debugging
-    console.log("⬅️ External API status:", response.status);
-    console.log("⬅️ External API headers:", [...response.headers.entries()]);
-
-    // Check Content-Type header to confirm JSON response
-    const contentType = response.headers.get("content-type") || "";
-    if (!contentType.includes("application/json")) {
-      const text = await response.text();
-      console.error("❌ Unexpected content-type from external API:", contentType);
-      console.error("❌ Raw response:", text);
-      return new Response(
-        JSON.stringify({ error: "Unexpected API response format", details: text }),
-        { status: 502 }
-      );
-    }
-
-    // Parse JSON response body
-    const data = await response.json();
-    console.log("✅ External API JSON response:", data);
-
-    // Check for errors or missing image data in API response
-    if (!response.ok || !data.image) {
-      console.error("❌ Image generation failed:", data);
-      return new Response(
-        JSON.stringify({ error: data.message || "Failed to generate image" }),
-        { status: response.status || 500 }
-      );
-    }
-
-    // Success: return the image URL or base64 data to the client
-    return new Response(JSON.stringify({ image: data.image }), { status: 200 });
-
-  } catch (err) {
-    // Catch any unexpected server errors
-    console.error("❌ Server error during image generation:", err);
     return new Response(
-      JSON.stringify({ error: "Server error" }),
+      JSON.stringify({ image: dataUrl }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  } catch (err) {
+    console.error("❌ Gemini API error:", err);
+    return new Response(
+      JSON.stringify({ error: "Failed to generate image" }),
       { status: 500 }
     );
   }
