@@ -1,4 +1,3 @@
-// EditCourse.jsx
 "use client";
 
 import axios from "axios";
@@ -8,7 +7,7 @@ import { CourseInfo } from "../../_components/courseinfo";
 import { ChapterTopicList } from "../../_components/chapterTopicList";
 import { Skeleton } from "../../../../components/ui/skeleton";
 
-export function EditCourse({ courseId: propCourseId, viewcourse = false }) {
+function EditCourse({ courseId: propCourseId, viewcourse = false }) {
   const params = useParams();
   const courseId = propCourseId || params.courseId;
 
@@ -40,14 +39,11 @@ export function EditCourse({ courseId: propCourseId, viewcourse = false }) {
     <div className="p-4 space-y-6">
       {loading ? (
         <div className="space-y-6">
-          {/* Skeleton for CourseInfo */}
           <div className="space-y-4">
             <Skeleton className="h-8 w-1/3" />
             <Skeleton className="h-6 w-1/2" />
             <Skeleton className="h-40 w-full rounded-lg" />
           </div>
-
-          {/* Skeleton for ChapterTopicList */}
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="space-y-2">
@@ -68,7 +64,7 @@ export function EditCourse({ courseId: propCourseId, viewcourse = false }) {
   );
 }
 
-// Correct Next.js page export for dynamic route
+// ✅ Only this default export is allowed in a Next.js page
 export default function Page({ params }) {
   return <EditCourse courseId={params.courseId} viewcourse={false} />;
 }
