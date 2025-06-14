@@ -30,9 +30,7 @@ Schema:
   }
 }
 `;
-export const ai = new GoogleGenAI({
-  apiKey:process.env.GEMINI_API_KEY
-});
+
 export async function POST(request) {
   try {
     const { courseId, ...formData } = await request.json();
@@ -81,7 +79,7 @@ export async function POST(request) {
 
     const bannerImageURL = await GenerateImage(imagePrompt);
 
-    // ✅ Save clean JSON string, not markdown-formatted one
+    // ✅ Save clean JSON string to database
     await db.insert(coursesTable).values({
       cid: courseId,
       userEmail: email,
@@ -91,7 +89,7 @@ export async function POST(request) {
       level: formData.level,
       includeVideo: formData.includeVideo,
       noOfChapters,
-      courseJson: jsonString, 
+      courseJson: jsonString,
       bannerImageURL,
     });
 
@@ -102,7 +100,7 @@ export async function POST(request) {
   }
 }
 
-// Generate image 
+// ✅ Helper function to generate image
 async function GenerateImage(prompt) {
   const BASE_URL = "https://aigurulab.tech";
 
