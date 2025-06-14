@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from "react";
 import axios from "axios";
 import { Loader2, Wand, ClipboardEdit, PlayCircle, ClipboardCheck, ClipboardCopy } from "lucide-react";

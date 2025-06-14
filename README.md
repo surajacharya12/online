@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🎓 AI-Powered Online Learning Platform
 
-## Getting Started
+<div align="center">
+  <img src="https://img.shields.io/badge/Next.js-13-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react&logoColor=white" alt="React"/>
+  <img src="https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/TailwindCSS-3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="TailwindCSS"/>
+</div>
 
-First, run the development server:
+## 🤖 AI-Powered Features
+
+- **Video Summarization**: Automatically generate concise summaries of educational videos using Google's Gemini AI
+- **Smart Learning Paths**: Personalized course recommendations based on user preferences
+- **Interactive Learning**: AI-powered quizzes and assessments
+- **Content Analysis**: Deep insights into learning materials
+
+## 🚀 Key Features
+
+- **Modern UI/UX**: Built with Next.js 13 and TailwindCSS
+- **Authentication**: Secure user authentication system
+- **Course Management**: Comprehensive course creation and management
+- **Responsive Design**: Works seamlessly across all devices
+- **Real-time Updates**: Instant feedback and progress tracking
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 13, React 18, TypeScript
+- **Styling**: TailwindCSS
+- **Database**: Drizzle ORM
+- **Authentication**: Custom auth system
+- **AI Integration**: Google Gemini AI
+- **API**: RESTful architecture
+
+## 📦 Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/onlinelearning.git
+cd onlinelearning
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up environment variables:
+
+```bash
+cp .env.example .env.local
+```
+
+4. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔧 Environment Variables
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Create a `.env.local` file with the following variables:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+NEXT_PUBLIC_API_URL=your_api_url
+GOOGLE_AI_API_KEY=your_gemini_api_key
+```
 
-## Learn More
+## 📚 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+onlinelearning/
+├── app/                    # Next.js 13 app directory
+│   ├── allinsight/        # AI-powered insights
+│   ├── api/              # API routes
+│   ├── course/           # Course management
+│   └── sign-in/          # Authentication
+├── components/            # Reusable components
+├── config/               # Configuration files
+├── context/              # React context
+├── hooks/                # Custom hooks
+├── lib/                  # Utility functions
+└── types/                # TypeScript types
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🤝 Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## Deploy on Vercel
+## 📝 License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👥 Authors
+
+- Your Name - Initial work
+
+## 🙏 Acknowledgments
+
+- Google Gemini AI for powering our summarization features
+- Next.js team for the amazing framework
+- All contributors who have helped shape this project
+
+---
+
+<div align="center">
+  Made with ❤️ and AI
+</div>
