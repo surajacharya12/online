@@ -67,3 +67,5 @@ export function EditCourse({ courseId: propCourseId, viewcourse = false }) {
     </div>
   );
 }
+
+export default EditCourse;
