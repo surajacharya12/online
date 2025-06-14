@@ -68,4 +68,7 @@ export function EditCourse({ courseId: propCourseId, viewcourse = false }) {
   );
 }
 
-export default EditCourse;
+// Correct Next.js page export for dynamic route
+export default function Page({ params }) {
+  return <EditCourse courseId={params.courseId} viewcourse={false} />;
+}
