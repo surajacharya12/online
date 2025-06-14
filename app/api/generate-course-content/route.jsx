@@ -3,6 +3,7 @@ import axios from "axios";
 import { db } from "../../../config/db";
 import { coursesTable } from "../../../config/schema";
 import { eq } from "drizzle-orm";
+import { Toaster } from "../../../components/ui/sonner";
 
 const YOUTUBE_BASE_URL = "https://www.googleapis.com/youtube/v3/search";
 
@@ -190,3 +191,5 @@ export async function GET(req) {
     );
   }
 }
+
+// Note: Toaster is for UI, not API. If you want toast notifications for course content generation, add <Toaster /> and toast logic in the page/component that calls this API, not here.

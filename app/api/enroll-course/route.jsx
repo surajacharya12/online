@@ -3,6 +3,7 @@ import { coursesTable, enrollmentsTable } from "../../../config/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { eq, and, desc } from "drizzle-orm";
+import { Toaster } from "../../../components/ui/sonner";
 
 // POST: Enroll in a course
 export async function POST(req) {
@@ -76,3 +77,6 @@ export async function GET(req) {
     return NextResponse.json(result);
   }
 }
+
+// Add Toaster for toast notifications in API route (if used in a page, not here)
+// If you want to show toast on enroll action in the UI, add <Toaster /> and toast logic in the relevant page/component.

@@ -3,6 +3,7 @@ import { coursesTable } from "../../../config/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { GoogleGenAI, Modality } from "@google/genai";
 import { NextResponse } from "next/server";
+import { Toaster } from "../../../components/ui/sonner";
 
 const PROMPT = `Generate Learning Course depends on following details. In which Make sure to add Course Name, Description, Course Banner Image Prompt (Create a modern, flat-style 2D digital illustration representing user Topic. Include UI/UX elements such as mockup screens, text blocks, icons, buttons, and creative workspace tools. Add symbolic elements related to user Course, like sticky notes, design components, and visual aids. Use a vibrant color palette (blues, purples, oranges) with a clean, professional look. The illustration should feel creative, tech-savvy, and educational, ideal for visualizing concepts in user Course) for Course Banner in 3d format Chapter Name, Topic under each chapters, Duration for each chapters etc, in JSON format only
 
@@ -127,3 +128,5 @@ async function GenerateImageWithGemini(prompt) {
 
   return imagePart.inlineData.data; // base64
 }
+
+// Note: Toaster is for UI, not API. If you want toast notifications for course layout generation, add <Toaster /> and toast logic in the page/component that calls this API, not here.

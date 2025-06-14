@@ -11,7 +11,8 @@ export async function GET(req) {
 
   // Case 1: Get all generated courses (courseId == 0)
   if (courseId === "0") {
-    const result = await db
+    const search = searchParams?.get("search")?.toLowerCase();
+    let result = await db
       .select()
       .from(coursesTable)
       .where(
@@ -22,8 +23,12 @@ export async function GET(req) {
           sql`${coursesTable.courseContent} IS NOT NULL`
         )
       );
-
-    console.log("Fetched generated courses:", result);
+    if (search) {
+      result = result.filter(course =>
+        (course.name?.toLowerCase() || "").includes(search)
+      );
+    }
+    console.log("Fetched generated courses (filtered):", result);
     return NextResponse.json(result);
   }
 

@@ -1,16 +1,14 @@
 "use client";
 
 import axios from "axios";
-import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { CourseInfo } from "../../_components/courseinfo";
 import { ChapterTopicList } from "../../_components/chapterTopicList";
 import { Skeleton } from "../../../../components/ui/skeleton";
+import { toast, Toaster } from "sonner";
+import { useParams } from "next/navigation";
 
-function EditCourse({ courseId: propCourseId, viewcourse = false }) {
-  const params = useParams();
-  const courseId = propCourseId || params.courseId;
-
+function EditCourse({ courseId, viewcourse = false }) {
   const [loading, setLoading] = useState(false);
   const [course, setCourse] = useState({});
 
@@ -20,10 +18,17 @@ function EditCourse({ courseId: propCourseId, viewcourse = false }) {
     const GetCourseInfo = async () => {
       try {
         setLoading(true);
+        console.log("Fetching course with ID:", courseId); // Debug log
         const result = await axios.get(`/api/courses?courseId=${courseId}`);
         setCourse(result.data);
+        toast.success("Course layout generated successfully!");
       } catch (error) {
         console.error("Error fetching course:", error);
+        toast.error(
+          `Failed to fetch course info: ${
+            error?.response?.data?.message || error.message
+          }`
+        );
         setCourse({});
       } finally {
         setLoading(false);
@@ -64,7 +69,15 @@ function EditCourse({ courseId: propCourseId, viewcourse = false }) {
   );
 }
 
-// ✅ Only this default export is allowed in a Next.js page
-export default function Page({ params }) {
-  return <EditCourse courseId={params.courseId} viewcourse={false} />;
+// ✅ Default export: gets route param via useParams
+export default function Page() {
+  const params = useParams();
+  const { courseId } = params;
+
+  return (
+    <>
+      <Toaster position="top-center" richColors />
+      <EditCourse courseId={courseId} viewcourse={false} />
+    </>
+  );
 }
